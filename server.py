@@ -29,7 +29,7 @@ app = Flask(__name__, template_folder=tmpl_dir)
 #
 #     DATABASEURI = "postgresql://gravano:foobar@35.243.220.243/proj1part2"
 #
-DATABASEURI = "postgresql://ml4407:5974@35.243.103.173/proj1part2"
+DATABASEURI = "postgresql://ml4407:5974@35.231.103.173/proj1part2"
 
 
 #
@@ -149,6 +149,11 @@ def index():
   #
   return render_template("index.html", **context)
 
+#@app.route('/home')
+#def home():
+  #return redirect('/')
+
+
 #
 # This is an example of a different path.  You can see it at:
 # 
@@ -160,6 +165,8 @@ def index():
 @app.route('/another')
 def another():
   return render_template("another.html")
+
+@app.route('/company')
 
 
 # Example of adding new data to the database
