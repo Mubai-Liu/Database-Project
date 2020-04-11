@@ -154,6 +154,7 @@ def index():
   #return redirect('/')
 
 
+
 #
 # This is an example of a different path.  You can see it at:
 # 
@@ -166,7 +167,10 @@ def index():
 def another():
   return render_template("another.html")
 
-@app.route('/company')
+@app.route('/companyInfo')
+def companyListing():
+    cursor = g.conn.execute("SELECT  FROM Company")
+    return render_template("index.html", **context)
 
 
 # Example of adding new data to the database
