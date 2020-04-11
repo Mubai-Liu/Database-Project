@@ -173,12 +173,24 @@ def another():
 
 
 
-@app.route('/info', methods = ['GET'])
-def info():
+@app.route('/companyListing', methods = ['GET'])
+def companyListing():
   cursor = g.conn.execute(
     "SELECT C.Company_Name, I.Industry FROM Company C JOIN C_Industry I ON C.Company_id = I.Company_id")
   names = []
   names.append(["Company Name", "Industry"])
+  for result in cursor:
+    names.append(result)
+  cursor.close()
+  context = dict(data = names)
+  return render_template("index.html", **context)
+
+@app.route('/jobListing', methods = ['GET'])
+def jobListing():
+  cursor = g.conn.execute(
+    "SELECT Title, Company_Name FROM Job")
+  names = []
+  names.append(["Job Title", "Company Name"])
   for result in cursor:
     names.append(result)
   cursor.close()
