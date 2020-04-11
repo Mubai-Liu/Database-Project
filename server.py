@@ -45,7 +45,6 @@ engine.execute("""CREATE TABLE IF NOT EXISTS test (
   id serial,
   name text
 );""")
-engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
 
 
 @app.before_request
@@ -149,9 +148,9 @@ def index():
   #
   return render_template("index.html", **context)
 
-#@app.route('/home')
-#def home():
-  #return redirect('/')
+@app.route('/home')
+def home():
+  return redirect('/')
 
 
 
@@ -167,10 +166,25 @@ def index():
 def another():
   return render_template("another.html")
 
-@app.route('/companyInfo')
-def companyListing():
-    cursor = g.conn.execute("SELECT  FROM Company")
-    return render_template("index.html", **context)
+# @app.route('/companyInfo')
+# def companyListing():
+#     cursor = g.conn.execute("SELECT  FROM Company")
+#     return render_template("index.html", **context)
+
+
+
+@app.route('/info', methods = ['GET'])
+def info():
+  cursor = g.conn.execute(
+    "SELECT C.Company_Name, I.Industry FROM Company C JOIN C_Industry I ON C.Company_id = I.Company_id")
+  names = []
+  names.append(["Company Name", "Industry"])
+  for result in cursor:
+    names.append(result)
+  cursor.close()
+  context = dict(data = names)
+  return render_template("index.html", **context)
+
 
 
 # Example of adding new data to the database
