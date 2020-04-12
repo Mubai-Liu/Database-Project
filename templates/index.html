@@ -35,7 +35,7 @@
 <p>Name of new computer scientist: <input type="text" name="name"> <input type="submit" value="Add"></p>
 </form>
 
-<form method ="GET" action="/info">
+<form method ="GET" action="/companyListing">
 <p><a href="info">Company Information</a></p>
 </form>
 
@@ -43,25 +43,23 @@
   <h1>Some Data</h1>
     <br>
     <div>
-	<table align = "center">
-	{% for item in data %}
-	
-	<tr>
-	    {% for i in item %}
-	    <td>{{i}}</td>
-	    {% endfor %}
-	</tr>
-	
-	{% endfor %}
-	
-	</table>
+	  <table align = "center">
+      {% for item in data %}
+        <tr>
+	      {% for i in item %}
+	      <td>{{i}}</td>
+	      {% endfor %}
+        </tr>
+      {% endfor %}
+    </table>
     </div> 
-  <br>
-</div>
+    </head>
+    <br>
+  </div>
 
-<p><a href="another">Go to the other page</a></p>
+<p>
+  <a href="another">Go to the other page</a>
+</p>
 
 </body>
-
-
 </html>
