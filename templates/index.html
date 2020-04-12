@@ -1,8 +1,8 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Register</title>
-		<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+		<title>{% block title %}{% endblock %}</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
 	</head>
 
@@ -40,6 +40,13 @@
     <a href="jobListing">Job Information</a>
   </p>
 </form>
+
+<form method ="GET" action="/showperson">
+  <p>
+    <a href="showperson">Show result</a>
+  </p>
+</form>
+
 
 <form method = "POST" action = "/post_user">
   <label> Username:</label>
