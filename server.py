@@ -218,7 +218,13 @@ def companyInfo():
 
   return render_template("index.html", **context)
 
-
+@app.route('/addCR', methods=['POST'])
+def addCR():
+  username = request.form['username']
+  comment = request.form['comment']
+  ratings = request.form['ratings']
+  g.conn.execute('INSERT INTO companyReview() VALUES (%s)', name)
+  return redirect('/')
 
 
 @app.route('/jobInfo', methods=['POST'])
