@@ -9,10 +9,11 @@ A debugger such as "pdb" may be helpful for debugging.
 Read about it online.
 """
 import os
+import re
   # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response
+from flask import Flask, request, render_template, g, redirect, Response, url_for
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -165,7 +166,7 @@ def home():
 #
 @app.route('/another')
 def another():
-  return render_template("another.html")
+  return render_template("register.html")
 
 # @app.route('/companyInfo')
 # def companyListing():
@@ -203,8 +204,9 @@ def jobListing():
 @app.route('/companyInfo', methods=['POST'])
 def companyInfo():
   name = request.form['name']
+  name = name + '%'
   if (name != ''):
-    cursor =  g.conn.execute("SELECT C.Company_Name, City, State, Description, Company_Size, Average_Salary,Username, Comment,Rating FROM Company C LEFT OUTER JOIN ( SELECT Company_ID, Username, Comment, Rating FROM Has_CR JOIN CompanyReview CR ON Has_CR.CR_ID = CR.CR_ID) R ON C.Company_ID = R.Company_ID WHERE lower(C.Company_Name) = lower((%s))",  name) 
+    cursor =  g.conn.execute("SELECT C.Company_Name, City, State, Description, Company_Size, Average_Salary,Username, Comment,Rating FROM Company C LEFT OUTER JOIN ( SELECT Company_ID, Username, Comment, Rating FROM Has_CR JOIN CompanyReview CR ON Has_CR.CR_ID = CR.CR_ID) R ON C.Company_ID = R.Company_ID WHERE lower(C.Company_Name) LIKE lower((%s))",  name) 
     names = []
     names.append(["Company Name", "City", "State","Company Description","Company Size", "Average Salary", "Username", "Comment","Rating"])
     for result in cursor:
@@ -232,7 +234,7 @@ def jobInfo():
   name = request.form['name']
   name = name + '%'
   if (name != '%'):
-    cursor =  g.conn.execute("SELECT sub1.title, sub1.Company_Name, Description, Username, Job_Start_time, Rating, Comment, Interview_Date, Difficulty_level, Question FROM (SELECT J.Title, J.Company_Name, Description, Username, Job_Start_time, Rating, Comment FROM Job J LEFT OUTER JOIN (SELECT Title, Company_Name, Username,Job_Start_time, Rating, Comment FROM Has_JR JOIN JobReview JR ON Has_JR.JR_ID = JR.JR_ID) JR ON J.title = JR.title AND J.Company_Name=JR.Company_Name) sub1 FULL JOIN (SELECT J.Title, J.Company_Name, Interview_Date, Difficulty_level, Question FROM Job J LEFT OUTER JOIN (SELECT Title, Company_Name,  Interview_Date, Difficulty_level, Question FROM Has_IR JOIN (SELECT IR.IR_ID, username, Interview_Date, Difficulty_level, Question FROM interviewReview IR LEFT OUTER JOIN ir_question Q ON IR.IR_ID=Q.IR_ID) IR ON has_IR.IR_ID=IR.IR_ID) IR ON J.title = IR.title AND J.Company_Name=IR.Company_Name) sub2 ON sub1.title=sub2.title AND sub1.Company_Name=sub2.Company_Name WHERE sub1.title LIKE (%s);", name) 
+    cursor =  g.conn.execute("SELECT sub1.title, sub1.Company_Name, Description, Username, Job_Start_time, Rating, Comment, Interview_Date, Difficulty_level, Question FROM (SELECT J.Title, J.Company_Name, Description, Username, Job_Start_time, Rating, Comment FROM Job J LEFT OUTER JOIN (SELECT Title, Company_Name, Username,Job_Start_time, Rating, Comment FROM Has_JR JOIN JobReview JR ON Has_JR.JR_ID = JR.JR_ID) JR ON J.title = JR.title AND J.Company_Name=JR.Company_Name) sub1 FULL JOIN (SELECT J.Title, J.Company_Name, Interview_Date, Difficulty_level, Question FROM Job J LEFT OUTER JOIN (SELECT Title, Company_Name,  Interview_Date, Difficulty_level, Question FROM Has_IR JOIN (SELECT IR.IR_ID, username, Interview_Date, Difficulty_level, Question FROM interviewReview IR LEFT OUTER JOIN ir_question Q ON IR.IR_ID=Q.IR_ID) IR ON has_IR.IR_ID=IR.IR_ID) IR ON J.title = IR.title AND J.Company_Name=IR.Company_Name) sub2 ON sub1.title=sub2.title AND sub1.Company_Name=sub2.Company_Name WHERE LOWER(sub1.title) LIKE LOWER((%s));", name) 
     names = []
     names.append(["Job Title", "Company Name", "Job Description","User Name","Start Time of the Job","Job Rating"," Job Comment","Interview Date","Difficulty Level","Question Asked"])
     for result in cursor:
@@ -251,6 +253,53 @@ def add():
   name = request.form['name']
   g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
   return redirect('/')
+
+
+@app.route('/pythonlogin/register', methods=['GET', 'POST'])
+def register():
+    # Output message if something goes wrong...
+    msg = ''
+    # Check if "username", "password" and "email" POST requests exist (user submitted form)
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
+        # Create variables for easy access
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
+                # Check if account exists using MySQL
+        cursor = g.conn.execute("SELECT * FROM person WHERE username = %s", (username,))
+        account = cursor.fetchone()
+        # If account exists show error and validation checks
+        if account:
+            msg = 'Account already exists!'
+        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            msg = 'Invalid email address!'
+        elif not re.match(r'[A-Za-z0-9]+', username):
+            msg = 'Username must contain only characters and numbers!'
+        elif not username or not password or not email:
+            msg = 'Please fill out the form!'
+        else:
+            # Account doesnt exists and the form data is valid, now insert new account into accounts table
+            g.conn.execute('INSERT INTO person(username, password, email) VALUES (%s, %s, %s)', (username, password, email,))
+            msg = 'You have successfully registered!'
+    elif request.method == 'POST':
+        # Form is empty... (no POST data)
+        msg = 'Please fill out the form!'
+    # Show registration form with message (if any)
+    return render_template('register.html', msg=msg)
+
+@app.route('/showperson', methods = ['GET'])
+def showperson():
+  cursor = g.conn.execute(
+    "SELECT * FROM Person")
+  names = []
+  names.append(["id", "username"])
+  for result in cursor:
+    names.append(result)
+  cursor.close()
+  context = dict(data = names)
+  return render_template("index.html", **context)
+
+
 
 
 @app.route('/login')

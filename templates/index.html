@@ -1,36 +1,34 @@
 <html>
-  <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <style>
-
-      h1 {
-        text-align: center;
-      }
-
-      p {
-        text-align: left;
-      }
-
-      table, td, th{
-        border:1px solid #000000
-      }
-
-      table {
-        border-collapse: collapse;
-        width:75%;
-      }
-
-      td, td {
-        padding: 5px;
-      }
-    </style>
-  </head>
+	<head>
+		<meta charset="utf-8">
+		<title>{% block title %}{% endblock %}</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+	</head>
 
 <body>
 
+<div class="container">
+  <h1>Register</h1>
+    <form action="" method="POST">
+        <div class="form-group">
+            <input type="text" name="name" class="form-control" placeholder="Name" required>
+        </div>
+        <div class="form-group">
+            <input type="text" name="username" class="form-control" placeholder="Username" required>
+        </div>
+        <div class="form-group">
+            <input type="password" name="password" class="form-control" placeholder="Password" required>
+        </div>
+        <div class="form-group">
+            <input type="password" name="confirm" class="form-control" placeholder="Confirm Password" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+</div>
 
 <form method="POST" action="/add">
-<p>Name of new computer scientist: <input type="text" name="name"> <input type="submit" value="Add"></p>
+  <p>Name of new computer scientist: <input type="text" name="name"> <input type="submit" value="Add"></p>
 </form>
 
 <form method ="GET" action="/companyListing">
@@ -42,6 +40,13 @@
     <a href="jobListing">Job Information</a>
   </p>
 </form>
+
+<form method ="GET" action="/showperson">
+  <p>
+    <a href="showperson">Show result</a>
+  </p>
+</form>
+
 
 <form method = "POST" action = "/post_user">
   <label> Username:</label>
@@ -68,7 +73,6 @@
 
 
 <div class = "content">
-  <h1>Some Data</h1>
     <br>
     <div>
 	  <table align = "center">
