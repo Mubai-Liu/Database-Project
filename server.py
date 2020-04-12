@@ -200,21 +200,24 @@ def jobListing():
   return render_template("index.html", **context)
 
 
-@app.route('/companyInfo', methods=['GET','POST'])
+@app.route('/companyInfo', methods=['POST'])
 def companyInfo():
   name = request.form['name']
   if (name != ''):
-    cursor =  g.conn.execute("SELECT C.Company_Name, City, State, Description, Company_Size, Average_Salary,Username, Comment,Rating FROM Company C LEFT OUTER JOIN ( SELECT Company_ID, Username, Comment, Rating FROM Has_CR JOIN CompanyReview CR ON Has_CR.CR_ID = CR.CR_ID) R ON C.Company_ID = R.Company_ID WHERE C.Company_Name LIKE (%s)%", name) 
+    cursor =  g.conn.execute("SELECT C.Company_Name, City, State, Description, Company_Size, Average_Salary,Username, Comment,Rating FROM Company C LEFT OUTER JOIN ( SELECT Company_ID, Username, Comment, Rating FROM Has_CR JOIN CompanyReview CR ON Has_CR.CR_ID = CR.CR_ID) R ON C.Company_ID = R.Company_ID WHERE lower(C.Company_Name) = lower((%s))",  name) 
     names = []
     names.append(["Company Name", "City", "State","Company Description","Company Size", "Average Salary", "Username", "Comment","Rating"])
     for result in cursor:
       names.append(result)
     cursor.close()
     context = dict(data = names)
+
   else:
     names = []
     context = dict(data = names)
+
   return render_template("index.html", **context)
+
 
 
 
