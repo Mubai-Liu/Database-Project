@@ -259,7 +259,9 @@ def register():
         username = request.form['username']
         password = request.form['password']
         email = request.form['email']
-                # Check if account exists using MySQL
+        city = request.form['city']
+        state = request.form['state']
+        degree = request.form['degree']
         cursor = g.conn.execute("SELECT * FROM person WHERE username = %s", (username,))
         account = cursor.fetchone()
         # If account exists show error and validation checks
@@ -273,7 +275,8 @@ def register():
             msg = 'Please fill out the form!'
         else:
             # Account doesnt exists and the form data is valid, now insert new account into accounts table
-            g.conn.execute('INSERT INTO person(username, password, email) VALUES (%s, %s, %s)', (username, password, email,))
+            g.conn.execute('INSERT INTO person(username, password, email, city, state, degree) VALUES (%s, %s, %s, %s, %s, %s)', (username, password, email,
+            city, state, degree))
             msg = 'You have successfully registered!'
     elif request.method == 'POST':
         # Form is empty... (no POST data)
