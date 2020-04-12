@@ -90,28 +90,30 @@ def teardown_request(exception):
 #
 @app.route('/')
 def index():
-  """
-  request is a special object that Flask provides to access web request information:
+  return render_template('index.html')
+# def index():
+#   """
+#   request is a special object that Flask provides to access web request information:
 
-  request.method:   "GET" or "POST"
-  request.form:     if the browser submitted a form, this contains the data in the form
-  request.args:     dictionary of URL arguments, e.g., {a:1, b:2} for http://localhost?a=1&b=2
+#   request.method:   "GET" or "POST"
+#   request.form:     if the browser submitted a form, this contains the data in the form
+#   request.args:     dictionary of URL arguments, e.g., {a:1, b:2} for http://localhost?a=1&b=2
 
-  See its API: http://flask.pocoo.org/docs/0.10/api/#incoming-request-data
-  """
+#   See its API: http://flask.pocoo.org/docs/0.10/api/#incoming-request-data
+#   """
 
-  # DEBUG: this is debugging code to see what request looks like
-  print(request.args)
+#   # DEBUG: this is debugging code to see what request looks like
+#   print(request.args)
 
 
-  #
-  # example of a database query
-  #
-  cursor = g.conn.execute("SELECT username FROM person;")
-  names = []
-  for result in cursor:
-    names.append(result[0])  # can also be accessed using result[0]
-  cursor.close()
+#   #
+#   # example of a database query
+#   #
+#   cursor = g.conn.execute("SELECT username FROM person;")
+#   names = []
+#   for result in cursor:
+#     names.append(result[0])  # can also be accessed using result[0]
+#   cursor.close()
 
   #
   # Flask uses Jinja templates, which is an extension to HTML where you can
@@ -139,14 +141,13 @@ def index():
   #     <div>{{n}}</div>
   #     {% endfor %}
   #
-  context = dict(data = names)
-
+  #  context = dict(data = names)
 
   #
   # render_template looks in the templates/ folder for files.
   # for example, the below file reads template/index.html
   #
-  return render_template("index.html", **context)
+  #return render_template("index.html", **context)
 
 @app.route('/home')
 def home():
