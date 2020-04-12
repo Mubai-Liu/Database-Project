@@ -107,7 +107,7 @@ def index():
   #
   # example of a database query
   #
-  cursor = g.conn.execute("SELECT * FROM person;")
+  cursor = g.conn.execute("SELECT username FROM person;")
   names = []
   for result in cursor:
     names.append(result['name'])  # can also be accessed using result[0]
