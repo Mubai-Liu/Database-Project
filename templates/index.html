@@ -43,7 +43,7 @@
   </p>
 </form>
 
-<form method = "post" action = "/post_user">
+<form method = "POST" action = "/post_user">
   <label> Username:</label>
   <input id = "username" type = "text" />
   <label> Email:</label>
@@ -55,8 +55,8 @@
 <br>
 <form method="POST" action="/companyInfo">
   <p>Input the company name: 
-    <input type="text" name="name"> 
-    <input type="submit" value="Search">
+    <input type = "text" name = "name">
+    <input type = "submit" value = "Add">
   </p >
 </form>
 
@@ -74,7 +74,6 @@
       {% endfor %}
     </table>
     </div> 
-    </head>
     <br>
   </div>
 
