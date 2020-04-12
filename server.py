@@ -207,7 +207,26 @@ def companyInfo():
   if (name != ''):
     cursor =  g.conn.execute("SELECT C.Company_Name, City, State, Description, Company_Size, Average_Salary,Username, Comment,Rating FROM Company C LEFT OUTER JOIN ( SELECT Company_ID, Username, Comment, Rating FROM Has_CR JOIN Company_Review CR ON Has_CR.CR_ID = CR.CR_ID) R ON C.Company_ID = R.Company_ID WHERE C.Company_Name LIKE (name)%", {'name': name}) 
     names = []
-    names.append(["Player Name", "City", "Country"])
+    names.append(["Company Name", "City", "State","Company Description","Company Size", "Average Salary", "Username", "Comment","Rating"])
+    for result in cursor:
+      names.append(result)
+    cursor.close()
+    context = dict(data = names)
+
+  else:
+    names = []
+    context = dict(data = names)
+
+  return render_template("index.html", **context)
+
+@app.route('/jobInfo', methods=['POST'])
+def jobInfo():
+  name = request.form['name']
+  name = name + '%'
+  if (name != ''):
+    cursor =  g.conn.execute("SELECT sub1.title, sub1.Company_Name, Description, Username, Job_Start_time, Rating, Comment, Interview_Date, Difficulty_level, Question FROM(SELECT J.Title, J.Company_Name, Description, Username, Job_Start_time, Rating, Comment FROM Job J LEFT OUTER JOIN (SELECT Title, Company_Name, Username,Job_Start_time, Rating, Comment FROM Has_JR JOIN Job_Review JR ON Has_JR.JR_ID = JR.JR_ID) JR ) R ON J.title = JR.title AND J.Company_Name=JR.Company_Name) sub1 FULL JOIN(SELECT J.Title, J.Company_Name, Interview_Date, Difficulty_level, Question FROM Job J LEFT OUTER JOIN (SELECT Title, Company_Name,  Interview_Date, Difficulty_level, Question FROM Has_IR JOIN(SELECT IR.IR_ID, username, Interview_Date, Difficulty_level, Question FROM interviewReview IR LEFT OUTER JOIN Question Q ON IR.IR_ID=Q.IR_ID) IR ON has_IR.IR_ID=IR.IR_ID) IR ON J.title = IR.title AND J.Company_Name=IR.Company_Name) sub2 ON sub1.title=sub2.title AND sub1.Company_Name=sub2.Company_Name WHERE sub1.title LIKE %(name)%", {'name': name}) 
+    names = []
+    names.append(["Job Title", "Company Name", "Job Description","User Name","Start Time of the Job","Job Rating"," Job Comment","Interview Date","Difficulty Level","Question Asked"])
     for result in cursor:
       names.append(result)
     cursor.close()
