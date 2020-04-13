@@ -5,18 +5,27 @@
 
 {% block content %}
 <h2>Home Page</h2>
-<p>
+<div class = "content">
 <form method="POST" action="/pythonlogin/companyInfo">
     Input the company name: 
       <input type = "text" name = "name">
       <input type = "submit" value = "Search">
 </form>
-</p>
+</div>
+<div class = "content">
 <form method="POST" action="/pythonlogin/jobInfo">
     Input the job title: 
       <input type = "text" name = "name">
       <input type = "submit" value = "Search">
 </form>
+</div>
+<div class = "content">
+<form method = "POST" action = "/pythonlogin/recommend">
+    Get info of Companies in the same fields:
+    <input type = "text" name = "name">
+    <input type = "submit" value = "Get Result">
+</form>
+</div>
 <div class = "content">
     <h2>Searched Info:</h2>
       <table>
@@ -30,13 +39,7 @@
     </table>
   </div> 
 
-<p> 
-    <form method = "POST" action = "/pythonlogin/recommend">
-        Get info of Companies in the same field:
-        <input type = "text" name = "name">
-        <input type = "submit" value = "Get Result">
-    </form>
-</p>
+
 {% endblock %}
 
 

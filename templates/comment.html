@@ -4,21 +4,22 @@
 {% block title %}Leave Your Comments{% endblock %}
 
 {% block content %}
+<h2>Leave Your Company Comment</h2>
 <form method="POST" action="/pythonlogin/addCR">
     <label >
       <i class="fas fa-industry"></i>
     </label>
-    <p>username</p>
-    <input type="text" name="username" >
-    <p>companyname</p>
-    <input type="text" name="companyname" >
-    <p>comment</p>
-    <input type="text" name="comment">
-    <p>rating</p>
-    <input type="text" name="rating" >
+    <p>Input your username</p>
+    <input type="text" name="username" require>
+    <p>Input the company name</p>
+    <input type="text" name="companyname" require>
+    <p>Input your comment</p>
+    <input type="text" name="comment" require>
+    <p>Input your rating</p>
+    <input type="text" name="rating"  require>
     <input type="submit" value="Comment">
   </form>
-
+<h2>Leave Your Job Comment</h2>
   <form method="POST" action="/pythonlogin/addJR">
     <label >
       <i class="fas fa-briefcase"></i>

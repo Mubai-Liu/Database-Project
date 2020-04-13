@@ -289,7 +289,7 @@ def recommend():
   name = name + '%'
   if (name != '%'):
     cursor = g.conn.execute(
-      "SELECT C.Company_Name, City, State, Description, Company_Size, Average_Salary,Username, Comment,Rating FROM Company C JOIN (SELECT Company_ID, Username, Comment, Rating FROM Has_CR JOIN CompanyReview CR ON Has_CR.CR_ID = CR.CR_ID WHERE Company_ID IN (SELECT Company_ID FROM C_Industry WHERE Industry = (SELECT Industry FROM C_Industry WHERE Company_ID = (SELECT Company_ID FROM Company WHERE lower(Company_Name) LIKE lower((%s)))))) R ON C.Company_ID = R.Company_ID;", 
+      "SELECT C.Company_Name, City, State, Description, Company_Size, Average_Salary,Username, Comment,Rating FROM Company C JOIN (SELECT Company_ID, Username, Comment, Rating FROM Has_CR JOIN CompanyReview CR ON Has_CR.CR_ID = CR.CR_ID WHERE Company_ID IN (SELECT Company_ID FROM C_Industry WHERE Industry IN (SELECT Industry FROM C_Industry WHERE Company_ID IN (SELECT Company_ID FROM Company WHERE lower(Company_Name) LIKE lower((%s)))))) R ON C.Company_ID = R.Company_ID;", 
       name)
     names = []
     names.append(["Company Name", "City", "State","Company Description","Company Size", "Average Salary", "Username", "Comment","Rating"])
@@ -304,15 +304,22 @@ def recommend():
 
 @app.route('/pythonlogin/addCR', methods=['POST'])
 def addCR():
-  #if 'username' in request.form and 'companyName' in request.form and'comment' in request.form and 'rating' in request.form:
-  username = request.form['username']
-  companyname = request.form['companyname']
-  comment = request.form['comment']
-  rating = request.form['rating']
-  g.conn.execute('INSERT INTO CompanyReview(Username,Comment,Rating) VALUES (%s, %s, %s)', (username, comment, rating)) 
-  #g.conn.execute('INSERT INTO has_CR(Company_ID, CR_ID) VALUES (SELECT Company_ID FROM Company WHERE lower(company_name) LIKE lower((%s)), SELECT CR_ID FROM CompanyReview WHERE comment = %s)',(companyname,comment))
-  g.conn.execute('INSERT INTO has_cr select company_id, cr_id from company, companyreview where company_name = %s and comment = %s;',(companyname, comment))
-  return render_template('home.html')
+  msg = ''
+  if 'username' in request.form and 'companyname' in request.form and 'comment' in request.form and 'rating' in request.form:
+    username = request.form['username']
+    companyname = request.form['companyname']
+    comment = request.form['comment']
+    rating = request.form['rating']
+    if not username or not companyname or not comment or not rating:
+      msg = 'Please fill out the form!'
+    else:
+      g.conn.execute('INSERT INTO CompanyReview(Username,Comment,Rating) VALUES (%s, %s, %s)', (username, comment, rating)) 
+      #g.conn.execute('INSERT INTO has_CR(Company_ID, CR_ID) VALUES (SELECT Company_ID FROM Company WHERE lower(company_name) LIKE lower((%s)), SELECT CR_ID FROM CompanyReview WHERE comment = %s)',(companyname,comment))
+      g.conn.execute('INSERT INTO has_cr select company_id, cr_id from company, companyreview where company_name = %s and comment = %s;',(companyname, comment))
+  elif request.method == 'POST':
+    # Form is empty... (no POST data)
+    msg = 'Please fill out the form!'
+  return render_template('comment.html', msg = msg)
 
 @app.route('/pythonlogin/addJR', methods=['POST'])
 def addJR():
