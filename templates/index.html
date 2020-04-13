@@ -1,73 +1,67 @@
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>{% block title %}{% endblock %}</title>
-		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
-	</head>
-
-<body>
 
 
-<form method="POST" action="/add">
-  <p>Name of new computer scientist: <input type="text" name="name"> <input type="submit" value="Add"></p>
-</form>
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>Home Page</h2>
+<p>Welcome back, {{ username }}!</p>
 
 <form method ="GET" action="/companyListing">
-<p><a href="companyListing">Company Information</a></p>
-</form>
-
-<form method ="GET" action="/jobListing">
+  <p><a href="companyListing">Company Information</a></p>
+  </form>
+  
+  <form method ="GET" action="/jobListing">
+    <p>
+      <a href="jobListing">Job Information</a>
+    </p>
+  </form>
+  
+  <form method ="GET" action="/showperson">
+    <p>
+      <a href="showperson">Show result</a>
+    </p>
+  </form>
+  
+  <form method="POST" action="/pythonlogin/companyInfo">
+    <p>Input the company name: 
+      <input type = "text" name = "name">
+      <input type = "submit" value = "Search">
+    </p >
+  </form>
+  
+  <form method="POST" action="/pythonlogin/jobInfo">
+    <p>Input the job title: 
+      <input type = "text" name = "name">
+      <input type = "submit" value = "Search">
+    </p >
+  </form>
+  
+  
+  
+  <div class = "content">
+      <br>
+      <div>
+      <table align = "center">
+        {% for item in data %}
+          <tr>
+          {% for i in item %}
+          <td>{{i}}</td>
+          {% endfor %}
+          </tr>
+        {% endfor %}
+      </table>
+      </div> 
+      <br>
+    </div>
+  
   <p>
-    <a href="jobListing">Job Information</a>
+    <a href="another">Go to the other page</a>
   </p>
-</form>
+  
+  <br>
+  <p><a href="home">Back to Homepage</a></p>
+  <br>
 
-<form method ="GET" action="/showperson">
-  <p>
-    <a href="showperson">Show result</a>
-  </p>
-</form>
-
-<form method="POST" action="/companyInfo">
-  <p>Input the company name: 
-    <input type = "text" name = "name">
-    <input type = "submit" value = "Search">
-  </p >
-</form>
-
-<form method="POST" action="/jobInfo">
-  <p>Input the job title: 
-    <input type = "text" name = "name">
-    <input type = "submit" value = "Search">
-  </p >
-</form>
-
-
-
-<div class = "content">
-    <br>
-    <div>
-	  <table align = "center">
-      {% for item in data %}
-        <tr>
-	      {% for i in item %}
-	      <td>{{i}}</td>
-	      {% endfor %}
-        </tr>
-      {% endfor %}
-    </table>
-    </div> 
-    <br>
-  </div>
-
-<p>
-  <a href="another">Go to the other page</a>
-</p>
-
-<br>
-<p><a href="home">Back to Homepage</a></p>
-<br>
-
-</body>
-</html>
+{% endblock %}

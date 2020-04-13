@@ -13,11 +13,11 @@ import re
   # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response, url_for
+from flask import Flask, request, render_template, g, redirect, Response, url_for, session
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
-
+app.secret_key = '4111'
 
 #
 # The following is a dummy URI that does not connect to a valid database. You will need to modify it to connect to your Part 2 database in order to use the data.
@@ -42,11 +42,10 @@ engine = create_engine(DATABASEURI)
 # Example of running queries in your database
 # Note that this will probably not work if you already have a table named 'test' in your database, containing meaningful data. This is only an example showing you how to run queries in your database using SQLAlchemy.
 #
-engine.execute("""CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);""")
-
+# engine.execute("""CREATE TABLE IF NOT EXISTS test (
+#   id serial,
+#   name text
+# );""")
 
 @app.before_request
 def before_request():
@@ -74,6 +73,7 @@ def teardown_request(exception):
     g.conn.close()
   except Exception as e:
     pass
+
 
 
 #
@@ -150,9 +150,52 @@ def index():
   #
   #return render_template("index.html", **context)
 
-@app.route('/home')
+@app.route('/pythonlogin/', methods=['GET', 'POST'])
+def login():
+    # Output message if something goes wrong...
+    msg = ''
+    # Check if "username" and "password" POST requests exist (user submitted form)
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
+        # Create variables for easy access
+        username = request.form['username']
+        password = request.form['password']
+        cursor = g.conn.execute('SELECT person_id, username FROM person WHERE username = %s AND password = %s', (username, password,))
+        account = cursor.fetchone()
+        # If account exists in accounts table in out database
+        if account:
+            # Create session data, we can access this data in other routes
+            session['loggedin'] = True
+            #session['id'] = account['person_id']
+            session['username'] = account['username']
+            # Redirect to home page
+            return redirect(url_for('home'))
+        else:
+            # Account doesnt exist or username/password incorrect
+            msg = 'Incorrect username/password!'
+    # Show the login form with message (if any)
+    return render_template('index.html', msg=msg)
+
+@app.route('/pythonlogin/logout')
+def logout():
+    # Remove session data, this will log the user out
+   session.pop('loggedin', None)
+   session.pop('id', None)
+   session.pop('username', None)
+   # Redirect to login page
+   return redirect(url_for('login'))
+
+@app.route('/pythonlogin/home')
 def home():
-  return redirect('/')
+    # Check if user is loggedin
+    if 'loggedin' in session:
+        # User is loggedin show them the home page
+        return render_template('home.html', username=session['username'])
+    # User is not loggedin redirect to login page
+    return redirect(url_for('login'))
+
+# @app.route('/home')
+# def home():
+#   return redirect('/')
 
 
 
@@ -164,7 +207,7 @@ def home():
 # Notice that the function name is another() rather than index()
 # The functions for each app.route need to have different names
 #
-@app.route('/another')
+@app.route('/pythonlogin/another')
 def another():
   return render_template("register.html")
 
@@ -175,7 +218,7 @@ def another():
 
 
 
-@app.route('/companyListing', methods = ['GET'])
+@app.route('/pythonlogin/companyListing', methods = ['GET'])
 def companyListing():
   cursor = g.conn.execute(
     "SELECT C.Company_Name, I.Industry FROM Company C JOIN C_Industry I ON C.Company_id = I.Company_id")
@@ -185,10 +228,10 @@ def companyListing():
     names.append(result)
   cursor.close()
   context = dict(data = names)
-  return render_template("index.html", **context)
+  return render_template("home.html", **context)
 
 
-@app.route('/jobListing', methods = ['GET'])
+@app.route('/pythonlogin/jobListing', methods = ['GET'])
 def jobListing():
   cursor = g.conn.execute(
     "SELECT Title, Company_Name FROM Job")
@@ -198,10 +241,10 @@ def jobListing():
     names.append(result)
   cursor.close()
   context = dict(data = names)
-  return render_template("index.html", **context)
+  return render_template("home.html", **context)
 
 
-@app.route('/companyInfo', methods=['POST'])
+@app.route('/pythonlogin/companyInfo', methods=['POST'])
 def companyInfo():
   name = request.form['name']
   name = name + '%'
@@ -213,14 +256,12 @@ def companyInfo():
       names.append(result)
     cursor.close()
     context = dict(data = names)
-
   else:
     names = []
     context = dict(data = names)
+  return render_template("home.html", **context)
 
-  return render_template("index.html", **context)
-
-@app.route('/addCR', methods=['POST'])
+@app.route('/pythonlogin/addCR', methods=['POST'])
 def addCR():
   if 'username' in request.form and 'companyName' in request.form and'comment' in request.form and 'rating' in request.form:
       username = request.form['username']
@@ -232,7 +273,7 @@ def addCR():
   return render_template("index.html", **context)
 
 
-@app.route('/jobInfo', methods=['POST'])
+@app.route('/pythonlogin/jobInfo', methods=['POST'])
 def jobInfo():
   name = request.form['name']
   name = name + '%'
@@ -247,7 +288,7 @@ def jobInfo():
   else:
     names = []
     context = dict(data = names)
-  return render_template("index.html", **context)
+  return render_template("home.html", **context)
 
 @app.route('/addJR', methods=['POST'])
 def addJR():
@@ -303,7 +344,7 @@ def register():
     # Show registration form with message (if any)
     return render_template('register.html', msg=msg)
 
-@app.route('/showperson', methods = ['GET'])
+@app.route('/pythonlogin/showperson', methods = ['GET'])
 def showperson():
   cursor = g.conn.execute(
     "SELECT * FROM Person")
@@ -313,7 +354,7 @@ def showperson():
     names.append(result)
   cursor.close()
   context = dict(data = names)
-  return render_template("index.html", **context)
+  return render_template("home.html", **context)
 
 
 
@@ -322,9 +363,6 @@ def showperson():
 # def login():
 #     abort(401)
 #     this_is_never_executed()
-@app.route('/pythonlogin/', methods=['GET', 'POST'])
-def login():
-    return render_template('index.html', msg='')
 
 if __name__ == "__main__":
   import click
