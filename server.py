@@ -263,11 +263,12 @@ def companyInfo():
 
 @app.route('/pythonlogin/addCR', methods=['POST'])
 def addCR():
-  username = request.form['username']
-  comment = request.form['comment']
-  ratings = request.form['ratings']
-  g.conn.execute('INSERT INTO companyReview() VALUES (%s)', name)
-  return redirect('/')
+  if 'username' in request.form and 'comment' in request.form and 'rating' in request.form:
+      username = request.form['username']
+      comment = request.form['comment']
+      rating = request.form['rating']
+      g.conn.execute('INSERT INTO companyReview(username,comment,rating) VALUES (%s, %s, %s)', (username, comment, rating,))
+  return render_template("index.html", **context)
 
 
 @app.route('/pythonlogin/jobInfo', methods=['POST'])
@@ -292,7 +293,7 @@ def jobInfo():
 @app.route('/add', methods=['POST'])
 def add():
   name = request.form['name']
-  g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
+  g.conn.execute('INSERT INTO test(name) ', name)
   return redirect('/')
 
 
