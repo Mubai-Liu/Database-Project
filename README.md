@@ -1,6 +1,6 @@
 ## Database & Web Info
 * PostgreSQL account: ml4407    Password: 5974
-* Web URL: 
+* Web URL: http://35.237.141.253:8111/
 
 ## Features
 In this web application, we built a website that allows users to search for company and job information. The users can also read and post reviews about those companies and jobs. 
