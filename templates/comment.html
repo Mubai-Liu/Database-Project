@@ -1,0 +1,40 @@
+
+{% extends 'layout.html' %}
+
+{% block title %}Leave Your Comments{% endblock %}
+
+{% block content %}
+<form method="POST" action="/pythonlogin/addCR">
+    <label >
+      <i class="fas fa-industry"></i>
+    </label>
+    <p>username</p>
+    <input type="text" name="username" >
+    <p>companyname</p>
+    <input type="text" name="companyname" >
+    <p>comment</p>
+    <input type="text" name="comment">
+    <p>rating</p>
+    <input type="text" name="rating" >
+    <input type="submit" value="Comment">
+  </form>
+
+  <form method="POST" action="/pythonlogin/addJR">
+    <label >
+      <i class="fas fa-briefcase"></i>
+    </label>
+    <p>username</p>
+    <input type="text" name="username" >
+    <p>companyname</p>
+    <input type="text" name="companyname" >
+    <p>comment</p>
+    <input type="text" name="comment">
+    <p>date entered</p>
+    <input type = "date" name = "job_start_time" format = "yyyy-mm-dd">
+    <p>rating</p>
+    <input type="text" name="rating" >
+    <input type="submit" value="Comment">
+  </form>
+
+
+{% endblock %}

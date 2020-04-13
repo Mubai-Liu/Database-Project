@@ -1,0 +1,44 @@
+
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>Home Page</h2>
+<p>
+<form method="POST" action="/pythonlogin/companyInfo">
+    Input the company name: 
+      <input type = "text" name = "name">
+      <input type = "submit" value = "Search">
+</form>
+</p>
+<form method="POST" action="/pythonlogin/jobInfo">
+    Input the job title: 
+      <input type = "text" name = "name">
+      <input type = "submit" value = "Search">
+</form>
+<div class = "content">
+    <h2>Searched Info:</h2>
+      <table>
+      {% for item in data %}
+        <tr>
+        {% for i in item %}
+        <td>{{i}}</td>
+        {% endfor %}
+        </tr>
+      {% endfor %}
+    </table>
+  </div> 
+
+<p> 
+    <form method = "POST" action = "/pythonlogin/recommend">
+        Get info of Companies in the same field:
+        <input type = "text" name = "name">
+        <input type = "submit" value = "Get Result">
+    </form>
+</p>
+{% endblock %}
+
+
+
+

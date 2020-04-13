@@ -137,7 +137,7 @@ body.loggedin {
   padding: 5px;
 }
 .content > p table tr:last-child, .content > div table tr:first-child {
-  font-weight: italic;
+  font-weight: bold;
   color: #4a536e;
   padding-right: 15px;
 }

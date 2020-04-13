@@ -10,6 +10,7 @@ Read about it online.
 """
 import os
 import re
+from datetime import datetime
   # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
@@ -211,6 +212,10 @@ def home():
 def another():
   return render_template("register.html")
 
+@app.route('/pythonlogin/comment')
+def comment():
+  return render_template("comment.html")
+
 # @app.route('/companyInfo')
 # def companyListing():
 #     cursor = g.conn.execute("SELECT  FROM Company")
@@ -228,7 +233,7 @@ def companyListing():
     names.append(result)
   cursor.close()
   context = dict(data = names)
-  return render_template("home.html", **context)
+  return render_template("company.html", **context)
 
 
 @app.route('/pythonlogin/jobListing', methods = ['GET'])
@@ -241,14 +246,14 @@ def jobListing():
     names.append(result)
   cursor.close()
   context = dict(data = names)
-  return render_template("home.html", **context)
+  return render_template("job.html", **context)
 
 
 @app.route('/pythonlogin/companyInfo', methods=['POST'])
 def companyInfo():
   name = request.form['name']
   name = name + '%'
-  if (name != ''):
+  if (name != '%'):
     cursor =  g.conn.execute("SELECT C.Company_Name, City, State, Description, Company_Size, Average_Salary,Username, Comment,Rating FROM Company C LEFT OUTER JOIN ( SELECT Company_ID, Username, Comment, Rating FROM Has_CR JOIN CompanyReview CR ON Has_CR.CR_ID = CR.CR_ID) R ON C.Company_ID = R.Company_ID WHERE lower(C.Company_Name) LIKE lower((%s))",  name) 
     names = []
     names.append(["Company Name", "City", "State","Company Description","Company Size", "Average Salary", "Username", "Comment","Rating"])
@@ -259,20 +264,7 @@ def companyInfo():
   else:
     names = []
     context = dict(data = names)
-  return render_template("home.html", **context)
-
-@app.route('/pythonlogin/addCR', methods=['POST'])
-def addCR():
-  #if 'username' in request.form and 'companyName' in request.form and'comment' in request.form and 'rating' in request.form:
-  username = request.form['username']
-  companyname = request.form['companyname']
-  comment = request.form['comment']
-  rating = request.form['rating']
-  g.conn.execute('INSERT INTO CompanyReview(Username,Comment,Rating) VALUES (%s, %s, %s)', (username, comment, rating)) 
-  #g.conn.execute('INSERT INTO has_CR(Company_ID, CR_ID) VALUES (SELECT Company_ID FROM Company WHERE lower(company_name) LIKE lower((%s)), SELECT CR_ID FROM CompanyReview WHERE comment = %s)',(companyname,comment))
-  g.conn.execute('INSERT INTO has_cr select company_id, cr_id from company, companyreview where company_name = %s and comment = %s;',(companyname, comment))
-  return render_template('home.html')
-
+  return render_template("searchresult.html", **context)
 
 @app.route('/pythonlogin/jobInfo', methods=['POST'])
 def jobInfo():
@@ -289,17 +281,50 @@ def jobInfo():
   else:
     names = []
     context = dict(data = names)
-  return render_template("home.html", **context)
+  return render_template("searchresult.html", **context)
 
-@app.route('/addJR', methods=['POST'])
+@app.route('/pythonlogin/recommend', methods = ['POST'])
+def recommend():
+  name = request.form['name']
+  name = name + '%'
+  if (name != '%'):
+    cursor = g.conn.execute(
+      "SELECT C.Company_Name, City, State, Description, Company_Size, Average_Salary,Username, Comment,Rating FROM Company C JOIN (SELECT Company_ID, Username, Comment, Rating FROM Has_CR JOIN CompanyReview CR ON Has_CR.CR_ID = CR.CR_ID WHERE Company_ID IN (SELECT Company_ID FROM C_Industry WHERE Industry = (SELECT Industry FROM C_Industry WHERE Company_ID = (SELECT Company_ID FROM Company WHERE lower(Company_Name) LIKE lower((%s)))))) R ON C.Company_ID = R.Company_ID;", 
+      name)
+    names = []
+    names.append(["Company Name", "City", "State","Company Description","Company Size", "Average Salary", "Username", "Comment","Rating"])
+    for result in cursor:
+      names.append(result)
+    cursor.close()
+    context = dict(data = names)
+  else:
+    names = []
+    context = dict(data = names)
+  return render_template("searchresult.html", **context)
+
+@app.route('/pythonlogin/addCR', methods=['POST'])
+def addCR():
+  #if 'username' in request.form and 'companyName' in request.form and'comment' in request.form and 'rating' in request.form:
+  username = request.form['username']
+  companyname = request.form['companyname']
+  comment = request.form['comment']
+  rating = request.form['rating']
+  g.conn.execute('INSERT INTO CompanyReview(Username,Comment,Rating) VALUES (%s, %s, %s)', (username, comment, rating)) 
+  #g.conn.execute('INSERT INTO has_CR(Company_ID, CR_ID) VALUES (SELECT Company_ID FROM Company WHERE lower(company_name) LIKE lower((%s)), SELECT CR_ID FROM CompanyReview WHERE comment = %s)',(companyname,comment))
+  g.conn.execute('INSERT INTO has_cr select company_id, cr_id from company, companyreview where company_name = %s and comment = %s;',(companyname, comment))
+  return render_template('home.html')
+
+@app.route('/pythonlogin/addJR', methods=['POST'])
 def addJR():
-  if 'username' in request.form and 'companyName' in request.form and'comment' in request.form and 'rating' in request.form:
-      username = request.form['username']
-      companyName = request.form['companyName']
-      comment = request.form['comment']
-      rating = request.form['rating']
-      g.conn.execute('INSERT INTO CompanyReview(Username, Company_ID, Comment,Rating) VALUES (%s, SELECT Company_ID FROM Company WHERE lower(Company_Name) LIKE lower((%s)), %s, %s)', (username, companyName, comment, rating))
-  return render_template("index.html", **context)
+  #if 'username' in request.form and 'companyName' in request.form and'comment' in request.form and 'rating' in request.form:
+  username = request.form['username']
+  jobtitle = request.form['title']
+  companyname = request.form['companyname']
+  comment = request.form['comment']
+  rating = request.form['rating']
+  job_start_time = datetime.strptime(request.form['job_start_time'], '%Y, %m, %d')
+  g.conn.execute('INSERT INTO jobreview(%s,%s,%s,%s);', (username, job_start_time, rating, comment))
+  return render_template("home.html")
 
 
 # Example of adding new data to the database
@@ -312,7 +337,6 @@ def add():
 
 @app.route('/pythonlogin/register', methods=['GET', 'POST'])
 def register():
-    # Output message if something goes wrong...
     msg = ''
     # Check if "username", "password" and "email" POST requests exist (user submitted form)
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
@@ -355,10 +379,7 @@ def showperson():
     names.append(result)
   cursor.close()
   context = dict(data = names)
-  return render_template("home.html", **context)
-
-
-
+  return render_template("testing.html", **context)
 
 # @app.route('/login')
 # def login():
