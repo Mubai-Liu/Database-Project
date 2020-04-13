@@ -305,11 +305,13 @@ def showperson():
 
 
 
-@app.route('/login')
+# @app.route('/login')
+# def login():
+#     abort(401)
+#     this_is_never_executed()
+@app.route('/pythonlogin/', methods=['GET', 'POST'])
 def login():
-    abort(401)
-    this_is_never_executed()
-
+    return render_template('index.html', msg='')
 
 if __name__ == "__main__":
   import click
