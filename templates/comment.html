@@ -4,38 +4,45 @@
 {% block title %}Leave Your Comments{% endblock %}
 
 {% block content %}
-<h2>Leave Your Company Comment</h2>
+<h2>Leave Your Company Comment Below:</h2>
+<div class = "content">
 <form method="POST" action="/pythonlogin/addCR">
     <label >
       <i class="fas fa-industry"></i>
     </label>
-    <p>Input your username</p>
+    <p>Input your username:</p>
     <input type="text" name="username">
-    <p>Input the company name</p>
+    <p>Input the Company Name:</p>
     <input type="text" name="companyname">
-    <p>Input your comment</p>
+    <p>Input your comment:</p>
     <input type="text" name="comment">
-    <p>Input your rating</p>
+    <p>Input your rating:</p>
     <input type="text" name="rating">
+    <p></p>
     <input type="submit" value="Comment">
   </form>
-<h2>Leave Your Job Comment</h2>
+</div>
+<h2>Leave Your Job Comment Below:</h2>
+<div class = "content">
   <form method="POST" action="/pythonlogin/addJR">
     <label >
       <i class="fas fa-briefcase"></i>
     </label>
-    <p>username</p>
+    <p>Input your username:</p>
     <input type="text" name="username" >
-    <p>companyname</p>
+    <p>Input the Company Name:</p>
     <input type="text" name="companyname" >
-    <p>comment</p>
+    <p>Input the Job Title:</p>
+    <input type="text" name="title" >
+    <p>Input your comment:</p>
     <input type="text" name="comment">
-    <p>date entered</p>
-    <input type = "date" name = "job_start_time" format = "yyyy-mm-dd">
-    <p>rating</p>
+    <p>Input the date you entered the company:</p>
+    <input type = "date" name = "job_start_time", max = '2020-04-15'>
+    <p>Input your rating:</p>
     <input type="text" name="rating" >
+    <p></p>
     <input type="submit" value="Comment">
   </form>
-
+</div>
 
 {% endblock %}

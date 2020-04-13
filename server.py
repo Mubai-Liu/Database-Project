@@ -10,7 +10,7 @@ Read about it online.
 """
 import os
 import re
-from datetime import datetime
+import datetime
   # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
@@ -323,16 +323,18 @@ def addCR():
 
 @app.route('/pythonlogin/addJR', methods=['POST'])
 def addJR():
-  #if 'username' in request.form and 'companyName' in request.form and'comment' in request.form and 'rating' in request.form:
   username = request.form['username']
   jobtitle = request.form['title']
   companyname = request.form['companyname']
   comment = request.form['comment']
   rating = request.form['rating']
-  job_start_time = datetime.strptime(request.form['job_start_time'], '%Y, %m, %d')
-  g.conn.execute('INSERT INTO jobreview(%s,%s,%s,%s);', (username, job_start_time, rating, comment))
-  return render_template("home.html")
-
+  job_start_time = datetime.datetime.strptime(request.form['job_start_time'], '%Y-%m-%d')
+  if not username or not companyname or not comment or not rating or not jobtitle or not job_start_time:
+    pass
+  else:
+    g.conn.execute('INSERT INTO jobreview (username, job_start_time, rating, comment) VALUES (%s,%s,%s,%s);', (username, job_start_time, rating, comment))
+    g.conn.execute('INSERT INTO has_Jr select title, jr_id, company_name from Job, JobReview WHERE title = %s and company_name = %s and comment = %s and username = %s',(jobtitle, companyname, comment, username))
+  return render_template("comment.html")
 
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
