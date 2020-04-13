@@ -133,11 +133,11 @@ body.loggedin {
     padding: 25px;
   background-color: #fff;
 }
-.content > p table td, .content > div table td {
+.content > p table tr, .content > div table tr {
   padding: 5px;
 }
-.content > p table td:first-child, .content > div table td:first-child {
-  font-weight: bold;
+.content > p table tr:last-child, .content > div table tr:first-child {
+  font-weight: italic;
   color: #4a536e;
   padding-right: 15px;
 }

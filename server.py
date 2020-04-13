@@ -263,14 +263,15 @@ def companyInfo():
 
 @app.route('/pythonlogin/addCR', methods=['POST'])
 def addCR():
-  if 'username' in request.form and 'companyName' in request.form and'comment' in request.form and 'rating' in request.form:
-      username = request.form['username']
-      companyName = request.form['companyName']
-      comment = request.form['comment']
-      rating = request.form['rating']
-      g.conn.execute('INSERT INTO CompanyReview(Username,Comment,Rating) VALUES (%s, %s, %s)', (username, comment, rating)) 
-      g.conn.execute('INSERT INTO has_CR(Company_ID, CR_ID) VALUES (SELECT Company_ID FROM Company WHERE lower(company_name) LIKE lower((%s)), SELECT CR_ID FROM CompanyReview WHERE comment = %s)',(companyName,comment))
-  return render_template("index.html", **context)
+  #if 'username' in request.form and 'companyName' in request.form and'comment' in request.form and 'rating' in request.form:
+  username = request.form['username']
+  companyname = request.form['companyname']
+  comment = request.form['comment']
+  rating = request.form['rating']
+  g.conn.execute('INSERT INTO CompanyReview(Username,Comment,Rating) VALUES (%s, %s, %s)', (username, comment, rating)) 
+  #g.conn.execute('INSERT INTO has_CR(Company_ID, CR_ID) VALUES (SELECT Company_ID FROM Company WHERE lower(company_name) LIKE lower((%s)), SELECT CR_ID FROM CompanyReview WHERE comment = %s)',(companyname,comment))
+  g.conn.execute('INSERT INTO has_cr select company_id, cr_id from company, companyreview where company_name = %s and comment = %s;',(companyname, comment))
+  return render_template('home.html')
 
 
 @app.route('/pythonlogin/jobInfo', methods=['POST'])
@@ -347,9 +348,9 @@ def register():
 @app.route('/pythonlogin/showperson', methods = ['GET'])
 def showperson():
   cursor = g.conn.execute(
-    "SELECT * FROM Person")
+    "SELECT * FROM companyreview")
   names = []
-  names.append(["id", "username"])
+  names.append(["testing", "review"])
   for result in cursor:
     names.append(result)
   cursor.close()
