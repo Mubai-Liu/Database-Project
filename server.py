@@ -222,11 +222,13 @@ def companyInfo():
 
 @app.route('/addCR', methods=['POST'])
 def addCR():
-  if 'username' in request.form and 'comment' in request.form and 'rating' in request.form:
+  if 'username' in request.form and 'companyName' in request.form and'comment' in request.form and 'rating' in request.form:
       username = request.form['username']
+      companyName = request.form['companyName']
       comment = request.form['comment']
       rating = request.form['rating']
-      g.conn.execute('INSERT INTO companyReview(username,comment,rating) VALUES (%s, %s, %s)', (username, comment, rating,))
+      g.conn.execute('INSERT INTO CompanyReview(Username,Comment,Rating) VALUES (%s, %s, %s)', (username, comment, rating)) 
+      g.conn.execute('INSERT INTO has_CR(Company_ID, CR_ID) VALUES (SELECT Company_ID FROM Company WHERE lower(company_name) LIKE lower((%s)), SELECT CR_ID FROM CompanyReview WHERE comment = %s)',(companyName,comment))
   return render_template("index.html", **context)
 
 
@@ -245,6 +247,16 @@ def jobInfo():
   else:
     names = []
     context = dict(data = names)
+  return render_template("index.html", **context)
+
+@app.route('/addJR', methods=['POST'])
+def addJR():
+  if 'username' in request.form and 'companyName' in request.form and'comment' in request.form and 'rating' in request.form:
+      username = request.form['username']
+      companyName = request.form['companyName']
+      comment = request.form['comment']
+      rating = request.form['rating']
+      g.conn.execute('INSERT INTO CompanyReview(Username, Company_ID, Comment,Rating) VALUES (%s, SELECT Company_ID FROM Company WHERE lower(Company_Name) LIKE lower((%s)), %s, %s)', (username, companyName, comment, rating))
   return render_template("index.html", **context)
 
 
