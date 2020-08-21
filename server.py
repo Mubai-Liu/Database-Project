@@ -31,13 +31,13 @@ app.secret_key = '4111'
 #
 #     DATABASEURI = "postgresql://gravano:foobar@35.243.220.243/proj1part2"
 #
-DATABASEURI = "postgresql://ml4407:5974@35.231.103.173/proj1part2"
+# DATABASEURI = "postgresql://ml4407:5974@35.231.103.173/proj1part2"
 
 
 #
 # This line creates a database engine that knows how to connect to the URI above.
 #
-engine = create_engine(DATABASEURI)
+# engine = create_engine(DATABASEURI)
 
 #
 # Example of running queries in your database
